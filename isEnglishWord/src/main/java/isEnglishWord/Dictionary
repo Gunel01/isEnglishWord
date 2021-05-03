@@ -1,0 +1,48 @@
+package isEnglishWord;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+
+import org.junit.Test;
+
+public class Dictionary {
+ 
+	public static void main(String[] args) throws Exception {
+        System.out.println(isEnglishWord( "made" ));
+
+	}
+	public static Set<String> isEnglishWord( String string ) throws IOException{
+		List<String> list = Files.readAllLines( new File( "/home/raudenaerde/words.txt" ).toPath(), Charset.defaultCharset() );
+
+        List<String> lowercase = list.stream().map( s -> s.toLowerCase() ).filter( s->s.chars().allMatch(Character::isLetter)).collect( Collectors.toList() );
+        Set <String> result =new TreeSet<String> ();
+        System.out.println( "Read " + lowercase.size() + " words" );
+        int[] freq = toFreq( string );
+        for ( String l : lowercase ){
+            int[] freqIn = toFreq( l );
+            if ( matches( freq, freqIn ) )
+            { result.add(l);}
+        }
+           return result;   
+}
+	 public static boolean matches( int[] freq, int[] freqIn ){
+	          for ( int i = 0; i < 26; i++ )
+	        { if ( freq[i] == 0 && freqIn[i]>0)
+	            { return false;}
+	            else if (freq[i] < freqIn[i])
+	            { return false;}}
+	        return true; }
+	    public static int[] toFreq( String string )
+	    {int[] freq = new int[26];
+	        for ( char c : string.toCharArray() ){
+	            if ( ( c - 'a' ) >= 0 && ( c - 'a' ) < 26 )
+	            { freq[c - 'a']++;}}
+	        return freq;
+	    }
+}
